@@ -1,0 +1,98 @@
+---
+title: "Purple Sea Urchins in Naples, 2010"
+author: "Margaret Hammond"
+date: "10/27/2021"
+output: html_document
+---
+
+## Overview
+Overview here. MUST COMPLETE ALL MY FIGURE CAPTIONS!!
+
+## Citation
+Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
+
+```{r setup, include = TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(kableExtra)
+library(here)
+library(janitor)
+library(lubridate)
+```
+
+Read in Data
+
+```{r}
+urchins <- read_csv(here("data", "urchins.csv"))
+
+urchins_tidy <- urchins %>% clean_names()
+
+```
+
+!!!!Compare the mean size of purple urchins in CONTROL (no giant kelp removal) or ANNUAL (annual kelp removal) sections of Naples Reef in 2010
+
+
+
+## Wrangle Data 
+
+Wrangle the data to include Naples Reef observations for purple urchins observed in 2010. 
+
+```{r}
+naples_urchin <- urchins_tidy %>% 
+  filter(common_name == "Purple Urchin", site == "NAPL") %>% 
+  mutate(date = mdy(date)) %>%
+  mutate(year = year(date)) %>% 
+  filter(year == "2010") %>%
+  mutate(treatment = case_when(
+    treatment == "ANNUAL" ~ "Annual",
+    treatment == "CONTROL" ~ "Control"))
+```
+
+
+## Visualize the Data
+
+!!Look at and consider exploratory faceted histograms and QQ-plots for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual), to assess normality. These are exploratory and do not need to be finalized and you do not need to add figure captions, but these should appear in your knitted document. Below the graphs add 1 - 2 sentences describing your main takeaways about the distribution of purple urchin sizes for each treatment (distribution, comparison, patterns, etc.). DELETE!!
+
+Histogram of purple urchins at Naples in 2010, as shown by their specific treatment. This is to visualize the data and understand the relationship of treatment on size. 
+
+```{r}
+
+ggplot(data = naples_urchin, aes(x = size)) +
+  geom_histogram(bins = 10,
+                 color = "black",
+                 aes(fill = treatment)) + 
+  facet_wrap(~ treatment) +
+  labs(x = "Size (cm)",
+       y = "Count",
+       title = "Size of Purple Sea Urchin (cm) by Treatment",
+       fill = "Treatment Type") +
+  theme_minimal()
+```
+
+## Data Analysis
+From the histogram created above, the size distribution between the two treatments appears to be similar. The control has a larger variance, whereas the annual appears to have more concentrated counts around 3 to 4 cm. 
+
+## Summary Table 
+
+Summary table of the treatment relationship to size on purple sea urchins at Naples Reef. This holds mean, standard deviation, and sample size. 
+
+```{r}
+treatment_urchin <- naples_urchin %>% 
+  group_by(treatment) %>% 
+  summarize(mean_size_cm = mean(size, na.rm = TRUE), 
+            median_size_cm = median(size), 
+            sd_size_cm = sd(size),
+            sample_size = n())
+
+treatment_urchin %>% 
+  kable(col.names = c("Treatment",
+                      "Mean size (cm)", 
+                      "Median size (cm)",
+                      "Standard deviation (cm)",
+                      "Sample size (n)"),
+        caption = "Purple Sea Urchin Size by Treatment on Naples Reef, 2010") %>% 
+  kable_styling(full_width = TRUE) 
+```
+
+## End of Task 4
