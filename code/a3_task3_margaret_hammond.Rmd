@@ -30,46 +30,45 @@ urchins_clean <- urchins %>% clean_names()
 ```
 
 ## Data Visualization
-
 Histogram to compare the sizes of red and purple sea urchin populations in Santa Barbara reefs. Bins lowered to 10 per urchin type for cleaner organization.
 
 ```{r}
 
 ggplot(data = urchins_clean, aes(x = size)) +
-  geom_histogram(bins = 10,
-                 aes(fill = common_name)) +
-  scale_fill_manual(values = c("purple", "red")) +
-  facet_wrap(~ common_name) +
+  geom_histogram(bins = 10, # Less bins for proper organization
+                 aes(fill = common_name),
+                 color = "black") +
+  scale_fill_manual(values = c("purple", "red")) + # Assign the correct colors to histogram
+  facet_wrap(~ common_name) + # Wrap by common name for data comparison 
   labs(x = "Size (cm)",
        y = "Count",
        title = "Size of Sea Urchin (cm) by Common Name",
        fill = "Common Name",
-       caption = "Figure 1. Diameter (cm) of Red and Purple 
+       caption = "Figure 1. Size (cm) of Red and Purple 
        Sea Urchin populations within Santa Barbara reef habitats.") +
   theme_minimal()
 ```
 
 
 ## Statistics Table
-
 Summary table that shows the statistics for purple and red urchins. Includes mean, median, standard deviation, and sample size. This is to understand the data statistics and compare the sizes between the two urchin populations.
 
 
 ```{r}
 urchin_stats <- urchins_clean %>% 
-  group_by(common_name) %>% 
-  summarize(mean_size_cm = mean(size, na.rm = TRUE), 
+  group_by(common_name) %>% # Group by purple or red urchin
+  summarize(mean_size_cm = round(mean(size), 2), # Round to the 2 decimal places for organization
             median_size_cm = median(size), 
-            sd_size_cm = sd(size),
+            sd_size_cm = round(sd(size), 2), # Round to the 2 decimal places for organization
             sample_size = n())
 
 urchin_stats %>% 
-  kable(col.names = c("Common Name",
+  kable(col.names = c("Common Name", # Create correct column labels
                       "Mean size (cm)", 
-                      "Median size (cm)",
+                      "Median size (cm)", 
                       "Standard deviation (cm)",
                       "Sample size (n)"),
-        caption = "Figure 2. Sea Urchin Size Statistics Summary by Common Name") %>% 
+        caption = "Figure 2. Sea Urchin Size (cm) Statistics Summary by Common Name") %>% 
   kable_styling(full_width = TRUE) 
 
 ```
@@ -84,10 +83,10 @@ Create a separate data set of purple urchins. In this data set, date is cleaned 
 
 ```{r}
 purple_urchins <- urchins_clean %>% 
-  filter(common_name == "Purple Urchin") %>% 
-  mutate(date = mdy(date)) %>% 
+  filter(common_name == "Purple Urchin") %>% # Filter by purple urchin to only contain that data
+  mutate(date = mdy(date)) %>%  # Use mdy() to convert data to Date class
   mutate(year = year(date)) %>% 
-  mutate(site_full = case_when(
+  mutate(site_full = case_when( # Create site_full column of proper reef names
     site == "NAPL" ~ "Naples Reef",
     site == "AQUE" ~ "Arroyo Quemado Reef",
     site == "CARP" ~ "Carpinteria Reef",
@@ -99,7 +98,6 @@ purple_urchins <- urchins_clean %>%
 
 
 ## Table Set Up
-
 Creating the code for a table to show the total number of purple urchins observed by site and year. 
 
 ```{r}
@@ -110,43 +108,32 @@ purple_urchins_table <- purple_urchins %>%
 
 
 ## Graph of Purple Urchins
-
 Make a finalized graph of counts of purple urchins recorded at each site over time for the years included in the study. 
 
 ```{r}
 
-#ggplot(data = purple_urchins_table, aes(x = year, y = n,)) +
-#  geom_line(aes(color = site_full)) +
-#  theme(text = element_text(
- #   size = 9)) +
- #     theme(axis.text.x = element_text(angle = 45)) +
- # labs(x = "Year",
- #      y = "Amount of Urchins",
- #      title = "Purple Sea Urchin Population by Site",
- #      color = "Site",
- #      caption = "Figure 2. Purple Sea Urchin Populations Over Time at 5 sites") 
 
-ggplot(data = purple_urchins_table, aes(x = year, y = n)) +
- geom_bar(aes(fill = site_full), stat = "identity", color = "black") +
-  facet_wrap(~ site_full, scale = "free") +
+ggplot(data = purple_urchins_table, aes(x = year, y = n)) + 
+ geom_bar(aes(fill = site_full), 
+          stat = "identity", color = "black") + # Bar plot to compare populations
+  facet_wrap(~ site_full, scale = "free") + # Facet_wrap for site comparison
   theme(text = element_text(
     size = 9)) +
-      theme(axis.text.x = element_text(angle = 45)) +
+      theme(axis.text.x = element_text(angle = 45)) + # Tilt the axis labels for organization
   labs(x = "Year",
        y = "Amount of Urchins",
        title = "Purple Sea Urchin Population by Site",
        fill = "Site",
-       caption = "Figure 2. Purple Sea Urchin Population Over Time at 5 Reef Sites in Santa Barbara") 
+       caption = "Figure 3. Purple Sea Urchin Population Over Time at 5 Reef Sites in Santa Barbara") 
 
 ```
 
 
 ## Data Analysis
-
 This graph shows a decline of purple sea urchin populations at all sites during the final years of observation. This may not be reflective of the total purple sea urchin population, because the sea urchins may be moving to other, unrecorded sites. We cannot make conclusions about the total population decline without understanding possible habitat changes and population dynamics. 
 
 
-## End of Task 3
+### End of Task 3
 
 
 

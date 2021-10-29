@@ -90,8 +90,8 @@ treatment_urchin %>%
                       "Median size (cm)",
                       "Standard deviation (cm)",
                       "Sample size (n)"),
-        caption = "Figure 1. Purple Sea Urchin Size by Treatment on Naples Reef, 2010") %>% 
+        caption = "Figure 1. Purple Sea Urchin Size (cm) by Treatment on Naples Reef, 2010") %>% 
   kable_styling(full_width = TRUE) 
 ```
 
-## End of Task 4
+### End of Task 4
